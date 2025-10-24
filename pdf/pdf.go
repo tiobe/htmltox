@@ -28,11 +28,12 @@ var Command = &cli.Command{
 
 // Returns a chromedp action that generates the PDF
 func printToPDF(buf *[]byte, size, footer string, pageNumbers bool) chromedp.ActionFunc {
+	paperSize := getPaperSize(size)
 	return func(ctx context.Context) error {
 		var err error
 		*buf, _, err = page.PrintToPDF().
-			WithPaperWidth(getPaperWidth(size)).
-			WithPaperHeight(getPaperHeight(size)).
+			WithPaperWidth(paperSize.Width).
+			WithPaperHeight(paperSize.Height).
 			WithMarginTop(0.5).
 			WithMarginBottom(0.5).
 			WithMarginLeft(0.5).
@@ -42,28 +43,5 @@ func printToPDF(buf *[]byte, size, footer string, pageNumbers bool) chromedp.Act
 			WithFooterTemplate(FooterHtml(footer, pageNumbers)).
 			Do(ctx)
 		return err
-	}
-}
-
-// Simple paper size mapping
-func getPaperWidth(size string) float64 {
-	switch size {
-	case "Letter":
-		return 8.5
-	case "Legal":
-		return 8.5
-	default: // A4
-		return 8.27
-	}
-}
-
-func getPaperHeight(size string) float64 {
-	switch size {
-	case "Letter":
-		return 11.0
-	case "Legal":
-		return 14.0
-	default: // A4
-		return 11.7
 	}
 }
