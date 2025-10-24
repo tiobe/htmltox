@@ -3,7 +3,9 @@ package shared
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/chromedp/cdproto/emulation"
@@ -20,7 +22,7 @@ func Run(cmd *cli.Command, capture ActionFunc, captureType string, scale float64
 		chromedp.NoFirstRun,
 		chromedp.NoDefaultBrowserCheck,
 		chromedp.DisableGPU,
-		chromedp.ExecPath(cmd.String("chromiumPath")),
+		chromedp.ExecPath(cmd.String("chromium-path")),
 	}
 
 	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
@@ -42,15 +44,13 @@ func Run(cmd *cli.Command, capture ActionFunc, captureType string, scale float64
 	}
 
 	// Set headers if provided
-	authHeader := cmd.String("authHeader")
-	if authHeader != "" {
-		tasks = append(tasks, network.SetExtraHTTPHeaders(network.Headers{
-			"Authorization": authHeader,
-		}))
+	headers, err := parseHeaders(cmd.StringSlice("header"))
+	if err != nil {
+		return err
 	}
+	tasks = append(tasks, network.SetExtraHTTPHeaders(headers))
 
 	var buffer []byte
-
 	url := cmd.String("url")
 	tasks = append(tasks,
 		chromedp.Navigate(url),
@@ -67,14 +67,27 @@ func Run(cmd *cli.Command, capture ActionFunc, captureType string, scale float64
 		return fmt.Errorf("failed to save %s: %w", captureType, err)
 	}
 
-	fmt.Printf("%s saved to %s\n", captureType, cmd.String("output"))
+	log.Printf("%s saved to %s\n", captureType, cmd.String("output"))
 	return nil
+}
+
+func parseHeaders(cmdHeaders []string) (network.Headers, error) {
+	headers := network.Headers{}
+	for _, h := range cmdHeaders {
+		parts := strings.SplitN(h, ":", 2)
+		if len(parts) == 2 {
+			headers[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
+		} else {
+			return nil, fmt.Errorf("failed to parse header: %s", h)
+		}
+	}
+	return headers, nil
 }
 
 // Polls window.status until it matches the given value.
 func waitForWindowStatus(expected string) chromedp.ActionFunc {
 	return func(ctx context.Context) error {
-		fmt.Printf("Waiting for window.status == %q...\n", expected)
+		log.Printf("Waiting for window.status %q...\n", expected)
 		for {
 			var status string
 			err := chromedp.Evaluate(`window.status`, &status).Do(ctx)

@@ -12,14 +12,16 @@ USAGE:
    htmltox pdf [options]
 
 OPTIONS:
-   --url string, -u string           URL to generate PDF from
-   --chromiumPath string, -c string  Path to Chrome/Chromium executable
-   --output string, -o string        Path to output PDF file (default: "htmltox.pdf")
-   --pageSize string, -s string      Page size (A4, Letter, etc.) (default: "A4")
-   --authHeader string               Authorization header to use for the requests
-   --footer string                   Add a custom string to the left side of the footer
-   --pageNumbers                     Add page numbers to the footer (default is true)
-   --help, -h                        show help
+   --output string, -o string     Path to output PDF file (default: "htmltox.pdf")
+   --page-size string, -s string  Page size (A4, Letter, etc.) (default: "A4")
+   --footer string                Add a custom string to the left side of the footer
+   --page-numbers, -n             Include page numbers in the footer (default is true)
+   --help, -h                     show help
+
+GLOBAL OPTIONS:
+   --url string, -u string                                    URL to generate PDF from
+   --chromium-path string, -c string                          Path to Chrome/Chromium executable
+   --header string, -H string [ --header string, -H string ]  Custom HTTP headers, e.g. -H 'Authorization: Basic <token>'
 ```
 
 ## Image generation
@@ -32,11 +34,13 @@ USAGE:
    htmltox img [options]
 
 OPTIONS:
-   --url string, -u string           URL to generate PDF from
-   --chromiumPath string, -c string  Path to Chrome/Chromium executable
-   --selector string, -s string      HTML selector to define what to create an image for (eg. div.tqi-label).
-   --output string, -o string        Path to output the image file (default: "htmltox.png")
-   --authHeader string               Authorization header to use for the requests
-   --scale float                     Device scale factor (1.0 = low, 2.0 = normal, 3.0 = high, 4.0 = ultra high) (default: 3)
-   --help, -h                        show help
+   --output string, -o string    Path to output the image file (default: "htmltox.png")
+   --selector string, -S string  HTML selector to define what to create an image for (eg. div.tqi-label).
+   --scale float, -s float       Device scale factor (1.0 = low, 2.0 = normal, 3.0 = high, 4.0 = ultra high) (default: 3)
+   --help, -h                    show help
+
+GLOBAL OPTIONS:
+   --url string, -u string                                    URL to generate PDF from
+   --chromium-path string, -c string                          Path to Chrome/Chromium executable
+   --header string, -H string [ --header string, -H string ]  Custom HTTP headers, e.g. -H 'Authorization: Basic <token>'
 ```

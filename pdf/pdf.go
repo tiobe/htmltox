@@ -13,17 +13,14 @@ var Command = &cli.Command{
 	Name:  "pdf",
 	Usage: "Convert a webpage to pdf using a Chromium (based) browser.",
 	Flags: []cli.Flag{
-		&cli.StringFlag{Name: "url", Required: true, Aliases: []string{"u"}, Usage: "URL to generate PDF from"},
-		&cli.StringFlag{Name: "chromiumPath", Required: true, Aliases: []string{"c"}, Usage: "Path to Chrome/Chromium executable"},
 		&cli.StringFlag{Name: "output", Value: "htmltox.pdf", Aliases: []string{"o"}, Usage: "Path to output PDF file"},
-		&cli.StringFlag{Name: "pageSize", Value: "A4", Aliases: []string{"s"}, Usage: "Page size (A4, Letter, etc.)"},
-		&cli.StringFlag{Name: "authHeader", Usage: "Authorization header to use for the requests"},
-		&cli.StringFlag{Name: "footer", Usage: ""},
-		&cli.BoolFlag{Name: "pageNumbers", Value: true, Usage: "Add page numbers to the footer (default is true)"},
+		&cli.StringFlag{Name: "page-size", Value: "A4", Aliases: []string{"s"}, Usage: "Page size (A4, Letter, etc.)"},
+		&cli.StringFlag{Name: "footer", Usage: "Add a custom string to the left side of the footer"},
+		&cli.BoolFlag{Name: "page-numbers", Value: true, Aliases: []string{"n"}, Usage: "Include page numbers in the footer (default is true)"},
 	},
 	Action: func(ctx context.Context, cmd *cli.Command) error {
 		actionFunc := func(buffer *[]byte) chromedp.Action {
-			return printToPDF(buffer, cmd.String("pageSize"), cmd.String("footer"), cmd.Bool("pageNumbers"))
+			return printToPDF(buffer, cmd.String("page-size"), cmd.String("footer"), cmd.Bool("page-numbers"))
 		}
 		return shared.Run(cmd, actionFunc, "PDF", 1.0)
 	},
