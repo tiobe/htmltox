@@ -14,7 +14,7 @@ var Command = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{Name: "output", Value: "htmltox.png", Aliases: []string{"o"}, Usage: "Path to output the image file"},
 		&cli.StringFlag{Name: "selector", Aliases: []string{"S"}, Usage: "HTML selector to define what to create an image for (eg. div.tqi-label)."},
-		&cli.Float64Flag{Name: "scale", Value: 3.0, Aliases: []string{"s"}, Usage: "Device scale factor (1.0 = low, 2.0 = normal, 3.0 = high, 4.0 = ultra high)"},
+		&cli.Float64Flag{Name: "scale", Value: 1.0, Aliases: []string{"s"}, Usage: "Device scale factor"},
 	},
 	Action: func(ctx context.Context, cmd *cli.Command) error {
 		actionFunc := func(buffer *[]byte) chromedp.Action {

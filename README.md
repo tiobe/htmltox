@@ -36,7 +36,7 @@ USAGE:
 OPTIONS:
    --output string, -o string    Path to output the image file (default: "htmltox.png")
    --selector string, -S string  HTML selector to define what to create an image for (eg. div.tqi-label).
-   --scale float, -s float       Device scale factor (1.0 = low, 2.0 = normal, 3.0 = high, 4.0 = ultra high) (default: 3)
+   --scale float, -s float       Device scale factor (default: 1)
    --help, -h                    show help
 
 GLOBAL OPTIONS:

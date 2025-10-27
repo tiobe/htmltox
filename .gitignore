@@ -33,3 +33,7 @@ go.work.sum
 
 # Build files
 build/
+
+# Test png/pdf
+htmltox.png
+htmltox.pdf
