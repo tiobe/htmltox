@@ -2,7 +2,7 @@ package img
 
 import (
 	"context"
-	"htmltox/shared"
+	"htmltox/internal/shared"
 
 	"github.com/chromedp/chromedp"
 	"github.com/urfave/cli/v3"

@@ -2,7 +2,7 @@ package pdf
 
 import (
 	"context"
-	"htmltox/shared"
+	"htmltox/internal/shared"
 
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"

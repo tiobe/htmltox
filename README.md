@@ -22,6 +22,7 @@ GLOBAL OPTIONS:
    --url string, -u string                                    URL to generate PDF from
    --chromium-path string, -c string                          Path to Chrome/Chromium executable
    --header string, -H string [ --header string, -H string ]  Custom HTTP headers, e.g. -H 'Authorization: Basic <token>'
+   --headless                                                 Run htmltox with a headless browser.
 ```
 
 ## Image generation
@@ -43,4 +44,5 @@ GLOBAL OPTIONS:
    --url string, -u string                                    URL to generate PDF from
    --chromium-path string, -c string                          Path to Chrome/Chromium executable
    --header string, -H string [ --header string, -H string ]  Custom HTTP headers, e.g. -H 'Authorization: Basic <token>'
+   --headless                                                 Run htmltox with a headless browser.
 ```
