@@ -20,10 +20,18 @@ var Command = &cli.Command{
 		actionFunc := func(buffer *[]byte) chromedp.Action {
 			selector := cmd.String("selector")
 			if selector != "" {
-				return chromedp.Screenshot(cmd.String("selector"), buffer)
+				return chromedp.Screenshot(selector, buffer)
 			}
 			return chromedp.FullScreenshot(buffer, 100)
 		}
-		return shared.Run(cmd, actionFunc, "image", cmd.Float64("scale"))
+		runArgs := shared.RunArguments{
+			ChromiumPath: cmd.String("chromium-path"),
+			Headers:      cmd.StringSlice(""),
+			Headless:     cmd.Bool("headless"),
+			Output:       cmd.String("output"),
+			Url:          cmd.String("url"),
+			WindowStatus: cmd.String("window-status"),
+		}
+		return shared.Run(runArgs, actionFunc, "image", cmd.Float64("scale"))
 	},
 }

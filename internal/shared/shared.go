@@ -11,18 +11,26 @@ import (
 	"github.com/chromedp/cdproto/emulation"
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
-	"github.com/urfave/cli/v3"
 )
 
 type ActionFunc func(*[]byte) chromedp.Action
 
-func Run(cmd *cli.Command, capture ActionFunc, captureType string, scale float64) error {
+type RunArguments struct {
+	ChromiumPath string
+	Headers      []string
+	Headless     bool
+	Output       string
+	Url          string
+	WindowStatus string
+}
+
+func Run(args RunArguments, capture ActionFunc, captureType string, scale float64) error {
 	opts := []chromedp.ExecAllocatorOption{
 		chromedp.NoFirstRun,
 		chromedp.NoDefaultBrowserCheck,
 		chromedp.DisableGPU,
-		chromedp.ExecPath(cmd.String("chromium-path")),
-		chromedp.Flag("headless", cmd.Bool("headless")),
+		chromedp.ExecPath(args.ChromiumPath),
+		chromedp.Flag("headless", args.Headless),
 	}
 
 	timer := time.Now()
@@ -39,7 +47,7 @@ func Run(cmd *cli.Command, capture ActionFunc, captureType string, scale float64
 	defer cancel()
 
 	// Set headers if provided
-	headers, err := parseHeaders(cmd.StringSlice("header"))
+	headers, err := parseHeaders(args.Headers)
 	if err != nil {
 		return err
 	}
@@ -56,7 +64,7 @@ func Run(cmd *cli.Command, capture ActionFunc, captureType string, scale float64
 			log.Printf("Browser opened in %.2f seconds", time.Since(timer).Seconds())
 			return nil
 		}),
-		navigateAndWaitForStatus(cmd.String("url"), "ready"),
+		navigateAndWaitForStatus(args.Url, args.WindowStatus),
 		capture(&buffer),
 	}
 
@@ -64,11 +72,11 @@ func Run(cmd *cli.Command, capture ActionFunc, captureType string, scale float64
 		return fmt.Errorf("chromedp run failed: %w", err)
 	}
 
-	if err := os.WriteFile(cmd.String("output"), buffer, 0644); err != nil {
+	if err := os.WriteFile(args.Output, buffer, 0644); err != nil {
 		return fmt.Errorf("failed to save %s: %w", captureType, err)
 	}
 
-	log.Printf("%s saved to %s in %.2f seconds\n", captureType, cmd.String("output"), time.Since(timer).Seconds())
+	log.Printf("%s saved to %s in %.2f seconds\n", captureType, args.Output, time.Since(timer).Seconds())
 	return nil
 }
 
@@ -86,7 +94,7 @@ func parseHeaders(cmdHeaders []string) (network.Headers, error) {
 }
 
 // Polls window.status until it matches the given value.
-func navigateAndWaitForStatus(url string, expected string) chromedp.ActionFunc {
+func navigateAndWaitForStatus(url string, status string) chromedp.ActionFunc {
 	return func(ctx context.Context) error {
 		timer := time.Now()
 
@@ -98,20 +106,23 @@ func navigateAndWaitForStatus(url string, expected string) chromedp.ActionFunc {
 			return fmt.Errorf("failed to navigate to %s: %w", url, err)
 		}
 
-		log.Printf("Waiting for window.status: %s", expected)
-		for {
-			var status string
-			err := chromedp.Evaluate(`window.status`, &status).Do(ctx)
-			if err == nil && status == expected {
-				elapsed := time.Since(timer).Seconds()
-				log.Printf("Page loaded in %.2f seconds", elapsed)
-				return nil
-			}
-			select {
-			case <-ctx.Done():
-				return fmt.Errorf("timeout waiting for window.status: %s", expected)
-			case <-time.After(100 * time.Millisecond):
+		if status != "" {
+			log.Printf("Waiting for window.status: %s", status)
+			for {
+				var windowStatus string
+				err := chromedp.Evaluate(`window.status`, &windowStatus).Do(ctx)
+				if err == nil && windowStatus == status {
+					elapsed := time.Since(timer).Seconds()
+					log.Printf("Page loaded in %.2f seconds", elapsed)
+					return nil
+				}
+				select {
+				case <-ctx.Done():
+					return fmt.Errorf("timeout waiting for window.status: %s", status)
+				case <-time.After(100 * time.Millisecond):
+				}
 			}
 		}
+		return nil
 	}
 }

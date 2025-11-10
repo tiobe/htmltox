@@ -22,7 +22,15 @@ var Command = &cli.Command{
 		actionFunc := func(buffer *[]byte) chromedp.Action {
 			return printToPDF(buffer, cmd.String("page-size"), cmd.String("footer"), cmd.Bool("page-numbers"))
 		}
-		return shared.Run(cmd, actionFunc, "PDF", 1.0)
+		runArgs := shared.RunArguments{
+			ChromiumPath: cmd.String("chromium-path"),
+			Headers:      cmd.StringSlice(""),
+			Headless:     cmd.Bool("headless"),
+			Output:       cmd.String("output"),
+			Url:          cmd.String("url"),
+			WindowStatus: cmd.String("window-status"),
+		}
+		return shared.Run(runArgs, actionFunc, "PDF", 1.0)
 	},
 }
 
