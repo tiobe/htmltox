@@ -19,17 +19,19 @@ var Command = &cli.Command{
 		&cli.BoolFlag{Name: "page-numbers", Value: true, Aliases: []string{"n"}, Usage: "Include page numbers in the footer (default is true)"},
 	},
 	Action: func(ctx context.Context, cmd *cli.Command) error {
-		actionFunc := func(buffer *[]byte) chromedp.Action {
-			return printToPDF(buffer, cmd.String("page-size"), cmd.String("footer"), cmd.Bool("page-numbers"))
-		}
 		runArgs := shared.RunArguments{
 			ChromiumPath: cmd.String("chromium-path"),
-			Headers:      cmd.StringSlice(""),
+			Headers:      cmd.StringSlice("header"),
 			Headless:     cmd.Bool("headless"),
 			Output:       cmd.String("output"),
 			Url:          cmd.String("url"),
 			WindowStatus: cmd.String("window-status"),
 		}
+
+		actionFunc := func(buffer *[]byte) chromedp.Action {
+			return printToPDF(buffer, cmd.String("page-size"), cmd.String("footer"), cmd.Bool("page-numbers"))
+		}
+
 		return shared.Run(runArgs, actionFunc, "PDF", 1.0)
 	},
 }

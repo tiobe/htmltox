@@ -3,6 +3,7 @@ package img
 import (
 	"context"
 	"htmltox/internal/shared"
+	"log"
 
 	"github.com/chromedp/chromedp"
 	"github.com/urfave/cli/v3"
@@ -17,21 +18,26 @@ var Command = &cli.Command{
 		&cli.Float64Flag{Name: "scale", Value: 1.0, Aliases: []string{"s"}, Usage: "Device scale factor"},
 	},
 	Action: func(ctx context.Context, cmd *cli.Command) error {
-		actionFunc := func(buffer *[]byte) chromedp.Action {
-			selector := cmd.String("selector")
-			if selector != "" {
-				return chromedp.Screenshot(selector, buffer)
-			}
-			return chromedp.FullScreenshot(buffer, 100)
-		}
 		runArgs := shared.RunArguments{
 			ChromiumPath: cmd.String("chromium-path"),
-			Headers:      cmd.StringSlice(""),
+			Headers:      cmd.StringSlice("header"),
 			Headless:     cmd.Bool("headless"),
 			Output:       cmd.String("output"),
 			Url:          cmd.String("url"),
 			WindowStatus: cmd.String("window-status"),
 		}
+
+		actionFunc := func(buffer *[]byte) chromedp.Action {
+			selector := cmd.String("selector")
+			if selector != "" {
+				log.Printf("Creating screenshot of selector \"%s\"", selector)
+				return chromedp.Screenshot(selector, buffer)
+			}
+
+			log.Print("Creating screenshot of full page")
+			return chromedp.FullScreenshot(buffer, 100)
+		}
+
 		return shared.Run(runArgs, actionFunc, "image", cmd.Float64("scale"))
 	},
 }

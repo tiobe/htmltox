@@ -46,6 +46,14 @@ func Run(args RunArguments, capture ActionFunc, captureType string, scale float6
 	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
+	chromedp.ListenTarget(ctx, func(ev any) {
+		resp, ok := ev.(*network.EventResponseReceived)
+		if ok && resp.Response.Status >= 400 {
+			log.Printf("Received %d for %s, cancelling", resp.Response.Status, resp.Response.URL)
+			cancel() // aborts chromedp.Run()
+		}
+	})
+
 	// Set headers if provided
 	headers, err := parseHeaders(args.Headers)
 	if err != nil {
@@ -112,12 +120,14 @@ func navigateAndWaitForStatus(url string, status string) chromedp.ActionFunc {
 				var windowStatus string
 				err := chromedp.Evaluate(`window.status`, &windowStatus).Do(ctx)
 				if err == nil && windowStatus == status {
-					elapsed := time.Since(timer).Seconds()
-					log.Printf("Page loaded in %.2f seconds", elapsed)
+					log.Printf("Page loaded in %.2f seconds", time.Since(timer).Seconds())
 					return nil
 				}
 				select {
 				case <-ctx.Done():
+					if ctx.Err() == context.Canceled {
+						return fmt.Errorf("navigation canceled after %.2f seconds", time.Since(timer).Seconds())
+					}
 					return fmt.Errorf("timeout waiting for window.status: %s", status)
 				case <-time.After(100 * time.Millisecond):
 				}
