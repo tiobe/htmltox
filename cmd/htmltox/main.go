@@ -10,9 +10,13 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+var (
+	Version = "dev"
+)
+
 var commands = &cli.Command{
 	Name:      "htmltox",
-	Version:   "0.1.1",
+	Version:   Version,
 	Copyright: "(c) 2025 TIOBE Software BV",
 	Flags: []cli.Flag{
 		&cli.StringFlag{Name: "url", Required: true, Aliases: []string{"u"}, Usage: "URL to generate PDF from"},

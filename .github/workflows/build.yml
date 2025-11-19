@@ -25,6 +25,8 @@ jobs:
           go-version: "stable"
       - name: Build all
         run: ./scripts/build.sh
+        env:
+          VERSION: ${{ needs.gitversion.outputs.fullSemVer }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
