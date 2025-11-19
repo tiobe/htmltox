@@ -10,7 +10,7 @@ on:
 
 jobs:
   gitversion:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       fullSemVer: ${{steps.gitversion.outputs.fullSemVer}}
       assemblySemFileVer: ${{steps.gitversion.outputs.assemblySemFileVer}}
