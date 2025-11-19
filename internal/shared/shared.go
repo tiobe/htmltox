@@ -25,13 +25,13 @@ type RunArguments struct {
 }
 
 func Run(args RunArguments, capture ActionFunc, captureType string, scale float64) error {
-	opts := []chromedp.ExecAllocatorOption{
-		chromedp.NoFirstRun,
-		chromedp.NoDefaultBrowserCheck,
+	opts := append(chromedp.DefaultExecAllocatorOptions[:], // extend the base options
 		chromedp.DisableGPU,
 		chromedp.ExecPath(args.ChromiumPath),
 		chromedp.Flag("headless", args.Headless),
-	}
+		chromedp.Flag("no-sandbox", args.Headless),
+		chromedp.Flag("disable-dev-shm-usage", args.Headless),
+	)
 
 	timer := time.Now()
 	log.Printf("Opening browser...")
