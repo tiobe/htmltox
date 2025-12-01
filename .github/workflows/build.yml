@@ -3,6 +3,7 @@ name: Build
 on:
   workflow_call:
   push:
+    branches: '*'
     tags-ignore: '*'
     paths-ignore:
       - ".github/**"
