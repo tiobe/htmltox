@@ -8,7 +8,7 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
   publish:
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     needs: build
     permissions:
       contents: write
@@ -36,4 +36,5 @@ jobs:
             htmltox-darwin-amd64
             htmltox-darwin-arm64
           username: '${{ secrets.PRIVATE_NEXUS_USERNAME }}'
+
           password: '${{ secrets.PRIVATE_NEXUS_PASSWORD }}'
