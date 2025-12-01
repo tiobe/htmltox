@@ -3,6 +3,7 @@ name: Build
 on:
   workflow_call:
   push:
+    tags-ignore: '*'
     paths-ignore:
       - ".github/**"
       - "!.github/workflows/build.yml"

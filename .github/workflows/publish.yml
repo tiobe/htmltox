@@ -1,0 +1,39 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+  publish:
+    runs-on: [self-hosted, linux]
+    needs: build
+    permissions:
+      contents: write
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v5
+      - name: Upload artifact
+        uses: softprops/action-gh-release@v2
+        with: 
+          files: |
+            htmltox.exe
+            htmltox-linux-amd64
+            htmltox-linux-arm64
+            htmltox-darwin-amd64
+            htmltox-darwin-arm64
+      - name: Upload artifact
+        uses: tiobe/upload-artifacts-action/upload@v2
+        with:
+          repo: plugins
+          targetdir: htmltox/${{ needs.build.outputs.version }}
+          files: |
+            htmltox.exe
+            htmltox-linux-amd64
+            htmltox-linux-arm64
+            htmltox-darwin-amd64
+            htmltox-darwin-arm64
+          username: '${{ secrets.PRIVATE_NEXUS_USERNAME }}'
+          password: '${{ secrets.PRIVATE_NEXUS_PASSWORD }}'
