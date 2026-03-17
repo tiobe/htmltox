@@ -24,6 +24,7 @@ var Command = &cli.Command{
 			Headers:      cmd.StringSlice("header"),
 			Headless:     cmd.Bool("headless"),
 			Output:       cmd.String("output"),
+			ProfileDir:   cmd.String("produle-dir"),
 			Url:          cmd.String("url"),
 			WindowStatus: cmd.String("window-status"),
 		}

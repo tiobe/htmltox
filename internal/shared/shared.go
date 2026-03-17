@@ -20,6 +20,7 @@ type RunArguments struct {
 	Headers      []string
 	Headless     bool
 	Output       string
+	ProfileDir   string
 	Url          string
 	WindowStatus string
 }
@@ -32,6 +33,23 @@ func Run(args RunArguments, capture ActionFunc, captureType string, scale float6
 		chromedp.Flag("no-sandbox", args.Headless),
 		chromedp.Flag("disable-dev-shm-usage", args.Headless),
 	)
+
+	if args.ProfileDir != "" {
+		profileDir, err := os.MkdirTemp(args.ProfileDir, "chromedp-*")
+		if err != nil {
+			return err
+		}
+		defer cleanupTmp(profileDir)
+
+		opts = append(opts,
+			chromedp.UserDataDir(profileDir),
+			chromedp.Env(
+				"HOME="+profileDir,
+				"XDG_CONFIG_HOME="+profileDir,
+				"XDG_CACHE_HOME="+profileDir,
+			),
+		)
+	}
 
 	timer := time.Now()
 	log.Printf("Opening browser...")
@@ -135,4 +153,15 @@ func navigateAndWaitForStatus(url string, status string) chromedp.ActionFunc {
 		}
 		return nil
 	}
+}
+
+func cleanupTmp(profileDir string) {
+	for range 10 {
+		err := os.RemoveAll(profileDir)
+		if err == nil {
+			return
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	log.Printf("failed to remove profile dir: %s", profileDir)
 }
