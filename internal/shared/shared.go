@@ -35,18 +35,12 @@ func Run(args RunArguments, capture ActionFunc, captureType string, scale float6
 	)
 
 	if args.ProfileDir != "" {
-		profileDir, err := os.MkdirTemp(args.ProfileDir, "chromedp-*")
-		if err != nil {
-			return err
-		}
-		defer cleanupTmp(profileDir)
-
 		opts = append(opts,
-			chromedp.UserDataDir(profileDir),
+			chromedp.UserDataDir(args.ProfileDir),
 			chromedp.Env(
-				"HOME="+profileDir,
-				"XDG_CONFIG_HOME="+profileDir,
-				"XDG_CACHE_HOME="+profileDir,
+				"HOME="+args.ProfileDir,
+				"XDG_CONFIG_HOME="+args.ProfileDir,
+				"XDG_CACHE_HOME="+args.ProfileDir,
 			),
 		)
 	}
@@ -153,15 +147,4 @@ func navigateAndWaitForStatus(url string, status string) chromedp.ActionFunc {
 		}
 		return nil
 	}
-}
-
-func cleanupTmp(profileDir string) {
-	for range 10 {
-		err := os.RemoveAll(profileDir)
-		if err == nil {
-			return
-		}
-		time.Sleep(50 * time.Millisecond)
-	}
-	log.Printf("failed to remove profile dir: %s", profileDir)
 }
