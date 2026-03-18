@@ -4,16 +4,16 @@ on:
   workflow_call:
     outputs:
       fullSemVer:
-        value: ${{jobs.gitversion.outputs.fullSemVer}}
+        value: ${{ jobs.gitversion.outputs.fullSemVer }}
       assemblySemFileVer:
-        value: ${{jobs.gitversion.outputs.assemblySemFileVer}}
+        value: ${{ jobs.gitversion.outputs.assemblySemFileVer }}
 
 jobs:
   gitversion:
     runs-on: ubuntu-latest
     outputs:
-      fullSemVer: ${{steps.gitversion.outputs.fullSemVer}}
-      assemblySemFileVer: ${{steps.gitversion.outputs.assemblySemFileVer}}
+      fullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}
+      assemblySemFileVer: ${{ steps.gitversion.outputs.assemblySemFileVer }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -29,9 +29,9 @@ jobs:
               increment: None
           EOF
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v4.3.3
+        uses: gittools/actions/gitversion/setup@v4.4.2
         with:
           versionSpec: "6.3.x"
       - name: Determine Version
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v4.3.3
+        uses: gittools/actions/gitversion/execute@v4.4.2

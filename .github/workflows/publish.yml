@@ -17,7 +17,7 @@ jobs:
         uses: actions/download-artifact@v8
       - name: Upload artifact
         uses: softprops/action-gh-release@v2
-        with: 
+        with:
           files: |
             htmltox.exe
             htmltox-linux-amd64
@@ -35,6 +35,5 @@ jobs:
             htmltox-linux-arm64
             htmltox-darwin-amd64
             htmltox-darwin-arm64
-          username: '${{ secrets.PRIVATE_NEXUS_USERNAME }}'
-
-          password: '${{ secrets.PRIVATE_NEXUS_PASSWORD }}'
+          username: "${{ secrets.PRIVATE_NEXUS_USERNAME }}"
+          password: "${{ secrets.PRIVATE_NEXUS_PASSWORD }}"

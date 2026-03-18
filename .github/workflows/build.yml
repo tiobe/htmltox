@@ -2,9 +2,12 @@ name: Build
 
 on:
   workflow_call:
+    outputs:
+      version:
+        value: ${{ jobs.build.outputs.version }}
   push:
-    branches: '*'
-    tags-ignore: '*'
+    branches: "*"
+    tags-ignore: "*"
     paths-ignore:
       - ".github/**"
       - "!.github/workflows/build.yml"
@@ -19,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: gitversion
     outputs:
-      version: ${{needs.gitversion.outputs.fullSemVer}}
+      version: ${{ needs.gitversion.outputs.fullSemVer }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
