@@ -19,15 +19,16 @@ var commands = &cli.Command{
 	Version:   Version,
 	Copyright: "(c) 2025 TIOBE Software BV",
 	Flags: []cli.Flag{
-		&cli.StringFlag{Name: "url", Required: true, Aliases: []string{"u"}, Usage: "URL to generate PDF from"},
 		&cli.StringFlag{Name: "chromium-path", Required: true, Aliases: []string{"c"}, Usage: "Path to Chrome/Chromium executable"},
-		&cli.StringFlag{Name: "window-status", Usage: "Wait for the window to reach a certain status"},
 		&cli.StringSliceFlag{Name: "header", Aliases: []string{"H"}, Usage: "Custom HTTP headers, e.g. -H 'Authorization: Basic <token>'"},
 		&cli.BoolFlag{Name: "headless", Value: false, Usage: "Run htmltox with a headless browser"},
+		&cli.StringFlag{Name: "profile-dir", Aliases: []string{"p"}, Usage: "Path to put the temporary browser profile directory into"},
+		&cli.StringFlag{Name: "url", Required: true, Aliases: []string{"u"}, Usage: "URL to generate PDF from"},
+		&cli.StringFlag{Name: "window-status", Usage: "Wait for the window to reach a certain status"},
 	},
 	Commands: []*cli.Command{
-		pdf.Command,
 		img.Command,
+		pdf.Command,
 	},
 }
 

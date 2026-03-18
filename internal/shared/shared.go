@@ -20,6 +20,7 @@ type RunArguments struct {
 	Headers      []string
 	Headless     bool
 	Output       string
+	ProfileDir   string
 	Url          string
 	WindowStatus string
 }
@@ -32,6 +33,17 @@ func Run(args RunArguments, capture ActionFunc, captureType string, scale float6
 		chromedp.Flag("no-sandbox", args.Headless),
 		chromedp.Flag("disable-dev-shm-usage", args.Headless),
 	)
+
+	if args.ProfileDir != "" {
+		opts = append(opts,
+			chromedp.UserDataDir(args.ProfileDir),
+			chromedp.Env(
+				"HOME="+args.ProfileDir,
+				"XDG_CONFIG_HOME="+args.ProfileDir,
+				"XDG_CACHE_HOME="+args.ProfileDir,
+			),
+		)
+	}
 
 	timer := time.Now()
 	log.Printf("Opening browser...")
